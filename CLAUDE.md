@@ -77,7 +77,7 @@ Use correct `type` frontmatter so plugin tools can find entries:
 ## Git Workflow (ADR-0025, amended by ADR-0032)
 
 - **`dev`** — the integration branch and default. **Nobody pushes to it directly**, including this session: a ruleset requires a pull request whose checks passed on top of current `dev`, with no bypass.
-- **`main`** — releases only; moves by fast-forward to a commit CI already verified (see the release runbook in `.claude/skills/pyrite-conductor/release-runbook.md`).
+- **`main`** — releases only; moves by fast-forward to a commit CI already verified (see the release runbook in the `pyrite-conductor` skill, `release-runbook.md`).
 - **Your branch** — every batch of work lives on `feature/*`, `fix/*` or `kb/*`, in **its own worktree**. Commit there at whatever pace the work needs.
 
 **Start of a session** (one command; creates the worktree, branch, venv, hooks, and a `.pyrite/config.yaml` so `pyrite -k pyrite` means *this* worktree's `kb/` — check with `pyrite kb list`):
@@ -118,14 +118,14 @@ ruff check pyrite/
 ## Two skills: worker and conductor
 
 - **pyrite-dev** — for an agent writing Pyrite code: one theme, one branch, one worktree, TDD, evidence, a report. It opens a draft PR after its first push so CI starts; it does not choose work or mark the PR ready.
-- **pyrite-conductor** — for orchestrating: reads GitHub issues and the roadmap, composes **reviewable themes**, creates a worktree and dispatches a `pyrite-worker` per theme (Sonnet 5 for well-specified work, Opus 5 for design-shaped work), reviews each branch (diff, the draft PR's CI, a `pyrite-reviewer` cold read for risky changes), flips the PR ready, shepherds it, keeps the repo healthy. Also releases and deploys.
-- Dispatchable agents (`.claude/agents/`): `pyrite-worker`, `pyrite-reviewer` (cold read), `pyrite-architect` (breakdown), `pyrite-explorer` (browser, exploratory), `pyrite-docs` (documentation drift), `pyrite-spike` (a time-boxed investigation whose only deliverable is a ticket with acceptance criteria, an ADR draft, or "not feasible").
+- **pyrite-conductor** — maintainer-only, and not shipped in this repo: it lives in the maintainer's operator plugin, together with `pyrite-meta-conductor` and the loop agents (#244). For orchestrating: reads GitHub issues and the roadmap, composes **reviewable themes**, creates a worktree and dispatches a `pyrite-worker` per theme (Sonnet 5 for well-specified work, Opus 5 for design-shaped work), reviews each branch (diff, the draft PR's CI, a `pyrite-reviewer` cold read for risky changes), flips the PR ready, shepherds it, keeps the repo healthy. Also releases and deploys.
+- Dispatchable agents (shipped with the conductor, not in this repo): `pyrite-worker`, `pyrite-reviewer` (cold read), `pyrite-architect` (breakdown), `pyrite-explorer` (browser, exploratory), `pyrite-docs` (documentation drift), `pyrite-spike` (a time-boxed investigation whose only deliverable is a ticket with acceptance criteria, an ADR draft, or "not feasible").
 - **pyrite-meta-conductor** — run by the strongest model after every ~5 landed themes (a human team's week is a few features, so the unit is themes, not days): watches the conductor's loops for the constraint (PR timings, rebases, redispatches, CI, the maintainer's queue) and proposes one measured change to the skills, an ADR or a ticket. Hallway testing applied to the process.
 - A session with a single agent is both: do the work under pyrite-dev, then load pyrite-conductor for review and the PR.
 
 **A PR is a unit a reviewer can hold in their head:** complete on one theme, as many commits as the idea needs, never a small piece of a thing. Batch by default. A follow-up that belongs to work already in flight goes onto that PR's branch, not into a new one.
 
-**Parallel sub-agents inside one worker** share the worker's branch and worktree. Do NOT give them `isolation: "worktree"`; give them disjoint files (footprint rules in `.claude/skills/pyrite-conductor/dispatch.md`).
+**Parallel sub-agents inside one worker** share the worker's branch and worktree. Do NOT give them `isolation: "worktree"`; give them disjoint files (footprint rules in the conductor's `dispatch.md`).
 
 ## Multiple Sessions
 
