@@ -40,7 +40,7 @@ The last line matters: `pyrite -k pyrite` resolves through a config, and
 without the worktree's own `.pyrite/config.yaml` it resolves through
 `~/.pyrite` to the *main* checkout -- every ticket update you make lands in
 the wrong tree. `scripts/new-worktree.sh` writes the local config; if `kb
-list` shows `/Users/markr/pyrite/kb`, stop and create it before any KB
+list` shows the main checkout's `kb/` instead of this worktree's, stop and create it before any KB
 command.
 
 If either is wrong, stop: `scripts/new-worktree.sh <branch>` from the main

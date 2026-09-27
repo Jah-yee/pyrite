@@ -60,7 +60,7 @@ gh issue list --label process --state all --limit 40 --json number,title,created
 gh pr list --state all --base dev --limit 60 --json number,title,isDraft,createdAt,mergedAt,closedAt,labels
 # Rework: rebases (BEHIND), redispatches, reverts
 gh pr list --state merged --base dev --limit 60 --json number,commits   # commit counts vs theme size
-git -C /Users/markr/pyrite log --oneline --grep='revert' -i dev | head
+git -C "$(git worktree list --porcelain | sed -n '1s/^worktree //p')" log --oneline --grep='revert' -i dev | head
 # Gate: CI duration and outcomes per job
 gh run list --branch dev --limit 40 --json databaseId,conclusion,createdAt,updatedAt
 # Backlog and queue shape

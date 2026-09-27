@@ -226,14 +226,15 @@ the claims on the board and the tick log are the whole state.
 # FIRST, before reading any file: the main checkout poisons every grep,
 # pytest and `pyrite` call run in it while it is behind (#210). A stale tree
 # always argues AGAINST a fix having landed, and the answer looks plausible.
-git -C /Users/markr/pyrite fetch -q origin
-git -C /Users/markr/pyrite merge --ff-only origin/dev   # or say how far behind it is
+main="$(git worktree list --porcelain | sed -n '1s/^worktree //p')"   # the main checkout
+git -C "$main" fetch -q origin
+git -C "$main" merge --ff-only origin/dev   # or say how far behind it is
 
 gh run list --branch dev --limit 3                      # is dev green?
 gh pr list --state open --json number,title,mergeStateStatus
-git -C /Users/markr/pyrite worktree list; git branch --list 'fix/*' 'feature/*' 'kb/*' 'process/*'
+git -C "$main" worktree list; git branch --list 'fix/*' 'feature/*' 'kb/*' 'process/*'
 gh issue list --milestone "<next version>" --state open
-df -h /Users/markr | tail -1                            # free disk, see the budget
+df -h "$main" | tail -1                                # free disk, see the budget
 ```
 
 - **The main checkout is current** — the `merge --ff-only` above. It went 35
