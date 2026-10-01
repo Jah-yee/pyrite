@@ -751,9 +751,9 @@ def qa_check_urls(
 
     from ..services.url_checker import URLChecker
 
-    ctx = cli_context()
-    cache_path = Path(cache_file) if cache_file else None
-    checker = URLChecker(ctx.db, cache_path=cache_path)
+    with cli_context() as (config, db, svc):
+        cache_path = Path(cache_file) if cache_file else None
+        checker = URLChecker(db, cache_path=cache_path)
 
     if output_format != "json":
         console.print(f"Collecting URLs from '{kb_name}'...")
